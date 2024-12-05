@@ -1,0 +1,59 @@
+---
+title: "Lab 11: Pokemon"
+author: "Seungho Choi"
+date: "`r Sys.Date()`"
+output: flexdashboard::flex_dashboard
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(plotly)
+library(crosstalk)
+pokemon <- read_csv("pokemon.csv")
+shared_pokemon <- SharedData$new(pokemon)
+```
+
+
+SidebarName {.sidebar}
+----------------------
+```{r}
+filter_select("poke_type", "Pokemon Type", shared_pokemon, ~`Type 1`)
+```
+
+
+Column
+-------------------------------------
+
+### Pokemon Type vs Total Power
+
+```{r, echo = FALSE}
+pl <- shared_pokemon %>%
+  ggplot() +
+  geom_boxplot(
+    aes(x = reorder(`Type 1`, Total, FUN = median), y = Total, fill = `Type 1`)) +
+    theme(axis.text.x = element_text(angle = 45)) +
+  labs(
+    x = "Pokemon Types",
+    y = "Pokemon Total Power",
+    title = "Box Plot Showing the Pokemon Type and Total Power"
+  )
+ggplotly(pl)
+```
+
+Column
+-------------------------------------
+
+### Defense vs Attack
+
+```{r}
+p <- pokemon %>%
+  ggplot() +
+  geom_point(mapping = aes(x = Defense, y = Attack, col = `Type 1`)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(
+    x = "Pokemon Defenses",
+    y = "Pokemon Attacks",
+    title = "Scatter Plot Showing the Attacks and Defenses of Pokemons"
+  )
+ggplotly(p)
+```
